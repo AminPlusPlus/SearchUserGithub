@@ -6,7 +6,7 @@ import "./styles.css";
 const Card = props => {
   return (
     <div style={{ margin: "1em" }}>
-      <img width="75" src={props.avatarUrl} />
+      <img width="75" src={props.avatar_url} />
       <div
         style={{
           display: "inline-block",
@@ -32,8 +32,14 @@ class Form extends React.Component {
 
   handleOnSubmit = event => {
     event.preventDefault();
-    console.log("sumpited : ", this.state.userInput);
+    //console.log("sumpited : ", this.state.userInput);
     //AJAX  fetch ..
+    axios
+      .get(`https://api.github.com/users/${this.state.userInput}`)
+      .then(resp => {
+        //console.log(response);
+        this.props.onSubmit(resp.data);
+      });
   };
   render() {
     return (
@@ -55,26 +61,19 @@ class Form extends React.Component {
 
 class App extends React.Component {
   state = {
-    data: [
-      {
-        name: "Aminjoni Abdullozoda",
-        avatarUrl:
-          "https://avatars3.githubusercontent.com/u/30694948?s=460&v=4",
-        company: "Google Inc"
-      },
-      {
-        name: "Milod Orif",
-        avatarUrl:
-          "https://avatars1.githubusercontent.com/u/25881325?s=460&v=4",
-        company: "Pornhub.com"
-      }
-    ]
+    data: []
+  };
+
+  addNewCard = cardInfo => {
+    this.setState(prevState => ({
+      data: prevState.data.concat(cardInfo)
+    }));
   };
 
   render() {
     return (
       <div>
-        <Form />
+        <Form onSubmit={this.addNewCard} />
         <CardList list={this.state.data} />
       </div>
     );
